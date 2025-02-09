@@ -7,25 +7,142 @@
 
 import SwiftUI
 
-struct TypeCategorySection: View {
+public struct TypeCategorySection: View {
     @Binding var selectedType: TransactionType
     @Binding var selectedCategory: TransactionCategory
     
+    public init(selectedType: Binding<TransactionType>,
+                selectedCategory: Binding<TransactionCategory>) {
+        self._selectedType = selectedType
+        self._selectedCategory = selectedCategory
+    }
+    
+    public var body: some View {
+        Section {
+            typeSelector
+            categorySelector
+        } header: {
+            Text("类型与分类")
+                .font(.headline)
+                .foregroundColor(.primary)
+        }
+        .headerProminence(.increased)
+    }
+    
+    // 分解后的类型选择视图
+    private var typeSelector: some View {
+        HStack(spacing: 12) {
+            ForEach(TransactionType.allCases, id: \.self) { type in
+                TypeButton(
+                    isSelected: selectedType == type,
+                    systemImage: type.icon,
+                    title: type.rawValue,
+                    color: type.color
+                ) {
+                    selectedType = type
+                }
+            }
+        }
+    }
+    
+    // 分解后的分类选择视图
+    private var categorySelector: some View {
+        Group {
+            if shouldUseScrollView {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    categoryContent
+                }
+            } else {
+                categoryContent
+            }
+        }
+    }
+    
+    private var categoryContent: some View {
+        HStack(spacing: 10) {
+            ForEach(TransactionCategory.allCases, id: \.self) { category in
+                CategoryTag(
+                    isSelected: selectedCategory == category,
+                    title: category.rawValue,
+                    color: category.color
+                ) {
+                    selectedCategory = category
+                }
+                .fixedSize() // 防止标签被压缩
+            }
+        }
+        .padding(.vertical, 4)
+    }
+    
+    private var shouldUseScrollView: Bool {
+        #if os(iOS)
+        return UIDevice.current.userInterfaceIdiom == .phone
+        #else
+        return false
+        #endif
+    }
+}
+
+
+private struct TypeButton: View {
+    let isSelected: Bool
+    let systemImage: String
+    let title: String
+    let color: Color
+    let action: () -> Void
+    
     var body: some View {
-        Section("分类信息") {
-            Picker("交易类型", selection: $selectedType) {
-                ForEach(TransactionType.allCases, id: \.self) { type in
-                    Text(type.rawValue).tag(type)
-                }
+        Button(action: action) {
+            VStack(spacing: 8) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(isSelected ? .white : color)
+                    .frame(width: 40, height: 40)
+                    .background(isSelected ? color : color.opacity(0.2))
+                    .clipShape(Circle())
+                
+                Text(title)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(isSelected ? color : .primary)
+                    .minimumScaleFactor(0.8)
+                    .lineLimit(1)
             }
-            .pickerStyle(.segmented)
-            
-            Picker("分类", selection: $selectedCategory) {
-                ForEach(TransactionCategory.allCases, id: \.self) { category in
-                    Label(category.rawValue, systemImage: category.icon)
-                        .tag(category)
-                }
+            .padding(8)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isSelected ? color : Color.clear, lineWidth: 2)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct CategoryTag: View {
+    let isSelected: Bool
+    let title: String
+    let color: Color
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Text(title)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(isSelected ? .white : color)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(
+                        Capsule()
+                            .fill(isSelected ? color : color.opacity(0.15))
+                    )
+                    .overlay(
+                        Capsule()
+                            .stroke(color.opacity(0.3), lineWidth: isSelected ? 0 : 1)
+                    )
+                    .minimumScaleFactor(0.8)
+                    .lineLimit(1)
             }
+            .buttonStyle(.plain)
         }
     }
 }
@@ -35,5 +152,6 @@ struct TypeCategorySection: View {
         selectedType: .constant(.expense),
         selectedCategory: .constant(.food)
     )
+    .padding()
 }
 

@@ -110,11 +110,11 @@ struct MainTabView: View {
 
 // MARK: - 预览视图
 #Preview("iOS") {
-    MainTabView()
+    MainTabView().environmentObject(DataManager())
         
 }
 
 #Preview("macOS") {
     MainTabView()
-        .frame(width: 1200, height: 800)
+        .frame(width: 1200, height: 800).environmentObject(DataManager())
 }

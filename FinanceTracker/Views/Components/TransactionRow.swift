@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// 更新TransactionRow.swift
 struct TransactionRow: View {
     let transaction: Transaction
     
@@ -32,7 +31,7 @@ struct TransactionRow: View {
             Spacer()
             
             VStack(alignment: .trailing) {
-                Text(transaction.formattedAmount())
+                Text(transaction.amount.formattedAsCurrency())
                     .foregroundStyle(amountColor)
                     .fontWeight(.medium)
                 

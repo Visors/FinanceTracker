@@ -62,3 +62,8 @@ struct SubscriptionTransactionRow: View {
         }
     }
 }
+
+
+#Preview{
+    SubscriptionView()
+}

@@ -62,7 +62,7 @@ private struct SummaryHeader: View {
 
 struct FinanceView: View {
     @EnvironmentObject var dataManager: DataManager
-    
+    @State private var showingAddView = false
     
     var body: some View {
         NavigationStack {
@@ -150,66 +150,6 @@ struct SummaryItemView: View {
                 .foregroundStyle(color)
         }
         .frame(maxWidth: .infinity)
-    }
-}
-
-struct AddTransactionView: View {
-    @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var dataManager: DataManager
-    
-    @State private var amount = ""
-    @State private var selectedType = TransactionType.expense
-    @State private var selectedCategory = TransactionCategory.food
-    @State private var note = ""
-    @State private var subscriptionCycle: SubscriptionCycle?
-    
-    var body: some View {
-        NavigationStack {
-            Form {
-                // 金额输入
-                AmountInputSection(amount: $amount)
-                
-                // 类型选择
-                TypeCategorySection(
-                    selectedType: $selectedType,
-                    selectedCategory: $selectedCategory
-                )
-                
-                // 订阅选项
-                SubscriptionSection(
-                    subscriptionCycle: $subscriptionCycle,
-                    showSubscription: selectedCategory == .subscription
-                )
-                
-                // 备注输入
-                NoteSection(note: $note)
-            }
-            .navigationTitle("新建交易")
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("完成") {
-                        saveTransaction()
-                        dismiss()
-                    }
-                    .disabled(amount.isEmpty)
-                }
-            }
-        }
-    }
-    
-    private func saveTransaction() {
-        guard let amountValue = Double(amount) else { return }
-        
-        let newTransaction = Transaction(
-            amount: amountValue,
-            type: selectedType,
-            category: selectedCategory,
-            date: Date(),
-            note: note,
-            subscriptionCycle: selectedCategory == .subscription ? subscriptionCycle : nil
-        )
-        
-        dataManager.addTransaction(newTransaction)
     }
 }
 
