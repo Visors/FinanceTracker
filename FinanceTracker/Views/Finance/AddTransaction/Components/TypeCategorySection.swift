@@ -92,29 +92,32 @@ private struct TypeButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(isSelected ? .white : color)
-                    .frame(width: 40, height: 40)
-                    .background(isSelected ? color : color.opacity(0.2))
-                    .clipShape(Circle())
-                
-                Text(title)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(isSelected ? color : .primary)
-                    .minimumScaleFactor(0.8)
-                    .lineLimit(1)
+            Button(action: action) {
+                VStack(spacing: 8) {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isSelected ? .white : color)
+                        .frame(width: 40, height: 40)
+                        .background(isSelected ? color : color.opacity(0.2))
+                        .clipShape(Circle())
+                    
+                    Text(title)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(isSelected ? color : .primary)
+                }
+                .padding(8)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.controlBackground) // 使用统一背景色
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(isSelected ? color : Color.clear, lineWidth: 2)
+                        )
+                )
             }
-            .padding(8)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? color : Color.clear, lineWidth: 2)
-            )
+            .buttonStyle(PlainButtonStyle())
+            .contentShape(RoundedRectangle(cornerRadius: 12))
         }
-        .buttonStyle(.plain)
-    }
 }
 
 private struct CategoryTag: View {
@@ -124,28 +127,40 @@ private struct CategoryTag: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
-            HStack {
+            Button(action: action) {
                 Text(title)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 13, weight: .medium))
                     .foregroundColor(isSelected ? .white : color)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
                     .background(
                         Capsule()
                             .fill(isSelected ? color : color.opacity(0.15))
+                            .background(
+                                Capsule()
+                                    .fill(Color.controlBackground) // 底层背景
+                            )
                     )
                     .overlay(
                         Capsule()
                             .stroke(color.opacity(0.3), lineWidth: isSelected ? 0 : 1)
                     )
-                    .minimumScaleFactor(0.8)
-                    .lineLimit(1)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PlainButtonStyle())
+            .contentShape(Capsule())
         }
+}
+
+extension Color {
+    static var controlBackground: Color {
+        #if os(macOS)
+        return Color(NSColor.controlBackgroundColor)
+        #else
+        return Color(UIColor.secondarySystemBackground)
+        #endif
     }
 }
+
 
 #Preview {
     TypeCategorySection(

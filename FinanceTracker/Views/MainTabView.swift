@@ -116,5 +116,5 @@ struct MainTabView: View {
 
 #Preview("macOS") {
     MainTabView()
-        .frame(width: 1200, height: 800).environmentObject(DataManager())
+        .frame(width: 600, height: 400).environmentObject(DataManager())
 }

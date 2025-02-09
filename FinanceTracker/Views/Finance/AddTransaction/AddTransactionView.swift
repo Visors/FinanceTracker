@@ -89,7 +89,7 @@ struct AddTransactionView: View {
         #if os(iOS)
         return UIDevice.current.userInterfaceIdiom == .phone
         #else
-        return false
+        return true
         #endif
     }
     
